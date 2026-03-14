@@ -1,0 +1,10 @@
+# Auto-mount USB storage devices for CDJ-100X
+# Place in /etc/udev/rules.d/
+
+ACTION=="add", KERNEL=="sd[a-z][0-9]", SUBSYSTEM=="block", \
+  RUN+="/bin/mkdir -p /media/%k", \
+  RUN+="/bin/mount -o uid=1000,gid=1000,dmask=022,fmask=133 /dev/%k /media/%k"
+
+ACTION=="remove", KERNEL=="sd[a-z][0-9]", SUBSYSTEM=="block", \
+  RUN+="/bin/umount -l /media/%k", \
+  RUN+="/bin/rmdir /media/%k"

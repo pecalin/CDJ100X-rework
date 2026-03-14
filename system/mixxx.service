@@ -1,0 +1,18 @@
+[Unit]
+Description=Mixxx DJ Software (fullscreen)
+After=cdj-bridge.service graphical.target
+Wants=cdj-bridge.service
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:0
+ExecStartPre=/bin/sleep 2
+ExecStart=/usr/bin/mixxx --fullScreen
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=graphical.target

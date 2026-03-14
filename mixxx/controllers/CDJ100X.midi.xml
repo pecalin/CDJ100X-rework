@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="" schemaVersion="1">
+    <info>
+        <name>CDJ100X</name>
+        <description>CDJ-100X Rework - RPi GPIO bridge via virtual MIDI</description>
+        <author>CDJ100X Project</author>
+    </info>
+    <controller id="">
+        <scriptfiles>
+            <file filename="CDJ100X.js" functionprefix="CDJ100X" />
+        </scriptfiles>
+        <controls>
+            <!-- Pitch Fader (14-bit: MSB on CC 0x00, LSB on CC 0x20) -->
+            <control>
+                <description>PITCH MSB</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.pitch</key>
+                <status>0xB0</status>
+                <midino>0x00</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>PITCH LSB</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.pitch</key>
+                <status>0xB0</status>
+                <midino>0x20</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Play/Pause -->
+            <control>
+                <description>PLAY</description>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <status>0x90</status>
+                <midino>0x3C</midino>
+                <options><normal/></options>
+            </control>
+
+            <!-- Cue (press + release) -->
+            <control>
+                <description>CUE ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.cue</key>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>CUE OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.cue</key>
+                <status>0x80</status>
+                <midino>0x3D</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Master Tempo / Tempo Range -->
+            <control>
+                <description>MASTER TEMPO / TEMPO RANGE</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.key</key>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Back Button -->
+            <control>
+                <description>BACK</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.backButton</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Search Backward (press + release) -->
+            <control>
+                <description>SEARCH BACKWARD ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.searchButton</key>
+                <status>0x90</status>
+                <midino>0x42</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SEARCH BACKWARD OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.searchButton</key>
+                <status>0x80</status>
+                <midino>0x42</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Search Forward (press + release) -->
+            <control>
+                <description>SEARCH FORWARD ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.searchButton</key>
+                <status>0x90</status>
+                <midino>0x43</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SEARCH FORWARD OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.searchButton</key>
+                <status>0x80</status>
+                <midino>0x43</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Button 1 / Jet (press + release) -->
+            <control>
+                <description>BUTTON 1 ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.button1</key>
+                <status>0x90</status>
+                <midino>0x44</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>BUTTON 1 OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.button1</key>
+                <status>0x80</status>
+                <midino>0x44</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Button 2 / Zip (press + release) -->
+            <control>
+                <description>BUTTON 2 ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.button2</key>
+                <status>0x90</status>
+                <midino>0x45</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>BUTTON 2 OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.button2</key>
+                <status>0x80</status>
+                <midino>0x45</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Button 3 / Wah (press + release) -->
+            <control>
+                <description>BUTTON 3 ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.button3</key>
+                <status>0x90</status>
+                <midino>0x46</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>BUTTON 3 OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.button3</key>
+                <status>0x80</status>
+                <midino>0x46</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Shift (Auto Cue button) (press + release) -->
+            <control>
+                <description>SHIFT ON</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.shift</key>
+                <status>0x90</status>
+                <midino>0x47</midino>
+                <options><script-binding/></options>
+            </control>
+            <control>
+                <description>SHIFT OFF</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.shift</key>
+                <status>0x80</status>
+                <midino>0x47</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Button Mode (Hold button) -->
+            <control>
+                <description>BUTTON MODE</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.buttonMode</key>
+                <status>0x90</status>
+                <midino>0x48</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Load Track (Next button / Browse encoder press) -->
+            <control>
+                <description>LOAD</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.loadTrack</key>
+                <status>0x90</status>
+                <midino>0x49</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Eject (Remove Disc button) -->
+            <control>
+                <description>EJECT</description>
+                <group>[Channel1]</group>
+                <key>eject</key>
+                <status>0x90</status>
+                <midino>0x4A</midino>
+                <options><normal/></options>
+            </control>
+
+            <!-- Browse Encoder Down (Channel 3) -->
+            <control>
+                <description>BROWSE DOWN</description>
+                <group>[Library]</group>
+                <key>CDJ100X.browseDown</key>
+                <status>0x92</status>
+                <midino>0x46</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Browse Encoder Up (Channel 3) -->
+            <control>
+                <description>BROWSE UP</description>
+                <group>[Library]</group>
+                <key>CDJ100X.browseUp</key>
+                <status>0x92</status>
+                <midino>0x47</midino>
+                <options><script-binding/></options>
+            </control>
+
+            <!-- Jog Wheel (CC on Channel 2) -->
+            <control>
+                <description>JOG WHEEL</description>
+                <group>[Channel1]</group>
+                <key>CDJ100X.nudgeWheelTurn</key>
+                <status>0xB1</status>
+                <midino>0x14</midino>
+                <options><script-binding/></options>
+            </control>
+        </controls>
+
+        <outputs>
+            <!-- Play LED -->
+            <output>
+                <group>[Channel1]</group>
+                <key>play_indicator</key>
+                <description>PLAY LED</description>
+                <status>0x90</status>
+                <midino>0x3D</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+
+            <!-- Cue LED -->
+            <output>
+                <group>[Channel1]</group>
+                <key>cue_indicator</key>
+                <description>CUE LED</description>
+                <status>0x90</status>
+                <midino>0x3E</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+
+            <!-- Beat Active (internal tempo LED) -->
+            <output>
+                <group>[Channel1]</group>
+                <key>beat_active</key>
+                <description>BEAT LED</description>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <maximum>0</maximum>
+            </output>
+
+            <!-- End of Track Warning -->
+            <output>
+                <group>[Channel1]</group>
+                <key>end_of_track</key>
+                <description>END OF TRACK LED</description>
+                <status>0x90</status>
+                <midino>0x40</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+
+            <!-- Play Latched -->
+            <output>
+                <group>[Channel1]</group>
+                <key>play_latched</key>
+                <description>PLAY LATCHED</description>
+                <status>0x90</status>
+                <midino>0x41</midino>
+                <on>0x00</on>
+                <off>0x7F</off>
+                <maximum>0</maximum>
+            </output>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>

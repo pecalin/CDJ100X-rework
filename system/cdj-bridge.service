@@ -1,0 +1,20 @@
+[Unit]
+Description=CDJ-100X Bridge (GPIO, Rekordbox USB, Pro DJ Link)
+After=network.target sound.target
+Before=mixxx.service
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/python3 -m bridge.main
+WorkingDirectory=/opt/cdj100x
+Restart=on-failure
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+# Allow GPIO and I2C access
+SupplementaryGroups=gpio i2c dialout
+
+[Install]
+WantedBy=multi-user.target
