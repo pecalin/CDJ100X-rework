@@ -19,14 +19,30 @@ apt-get install -y \
     libasound2-dev \
     libjack-dev
 
-# --- Enable I2C ---
-echo "[2/7] Enabling I2C..."
+# --- Enable I2C, disable SPI and serial console ---
+echo "[2/8] Configuring GPIO interfaces..."
+
+# Enable I2C (needed for ADS1115 pitch fader)
 if ! grep -q "^dtparam=i2c_arm=on" /boot/config.txt; then
     echo "dtparam=i2c_arm=on" >> /boot/config.txt
 fi
 if ! grep -q "^i2c-dev" /etc/modules; then
     echo "i2c-dev" >> /etc/modules
 fi
+
+# Disable SPI (GPIO 7/8 are SPI CE1/CE0 — can block boot if buttons pull them low)
+# GPIO 9/10/11 are SPI MISO/MOSI/SCLK — used for Zip/Jet/Wah buttons instead
+if ! grep -q "^dtparam=spi=off" /boot/config.txt; then
+    echo "dtparam=spi=off" >> /boot/config.txt
+fi
+
+# Disable serial console (GPIO 14/15 are UART TX/RX — used for browse encoder)
+if [ -f /boot/cmdline.txt ]; then
+    sed -i 's/console=serial0,[0-9]* //g' /boot/cmdline.txt
+    sed -i 's/console=ttyAMA0,[0-9]* //g' /boot/cmdline.txt
+fi
+systemctl disable serial-getty@ttyS0.service 2>/dev/null || true
+systemctl disable serial-getty@ttyAMA0.service 2>/dev/null || true
 
 # --- Install Python dependencies ---
 echo "[3/7] Installing Python dependencies..."

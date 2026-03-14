@@ -70,23 +70,26 @@ The **cdj-bridge** is a single Python process that handles three jobs:
 
 All connections use **BCM pin numbering**. Buttons use internal pull-up resistors (active LOW).
 
+> **Note:** The original CDJPlayer `GPIO_PINS.cs` had pin conflicts — see
+> [Conflict Resolution](#gpio-conflict-resolution) below for details.
+
 #### Buttons
 
-| Function | GPIO | MIDI Note | Description |
-|----------|------|-----------|-------------|
-| Play/Pause | 20 | 0x3C | Toggle play/pause |
-| Cue | 21 | 0x3D | CDJ-style cue (press & hold) |
-| Next Track | 4 | 0x49 | Load selected track |
-| Back | 17 | 0x3F | Navigate back in library |
-| Search Forward | 27 | 0x43 | Seek forward (hold) |
-| Search Backward | 22 | 0x42 | Seek backward (hold) |
-| Jet (EFX 1) | 10 | 0x44 | Multi-function button 1 |
-| Zip (EFX 2) | 9 | 0x45 | Multi-function button 2 |
-| Wah (EFX 3) | 11 | 0x46 | Multi-function button 3 |
-| Hold/Mode | 24 | 0x48 | Cycle button modes |
-| Auto Cue (Shift) | 5 | 0x47 | Shift modifier |
-| Remove Disc | 6 | 0x4A | Eject |
-| Tempo Master | 13 | 0x3E | Key lock / tempo range (with shift) |
+| Function | GPIO | MIDI Note | Description | Notes |
+|----------|------|-----------|-------------|-------|
+| Play/Pause | 20 | 0x3C | Toggle play/pause | |
+| Cue | 21 | 0x3D | CDJ-style cue (press & hold) | |
+| Next Track | 4 | 0x49 | Load selected track | |
+| Back | 17 | 0x3F | Navigate back in library | |
+| Search Forward | 27 | 0x43 | Seek forward (hold) | |
+| Search Backward | 22 | 0x42 | Seek backward (hold) | |
+| Jet (EFX 1) | 10 | 0x44 | Multi-function button 1 | SPI pin — disable SPI |
+| Zip (EFX 2) | 9 | 0x45 | Multi-function button 2 | SPI pin — disable SPI |
+| Wah (EFX 3) | 11 | 0x46 | Multi-function button 3 | SPI pin — disable SPI |
+| Hold/Mode | 24 | 0x48 | Cycle button modes | |
+| Auto Cue (Shift) | 5 | 0x47 | Shift modifier | |
+| Remove Disc | 6 | 0x4A | Eject | |
+| Tempo Master | 13 | 0x3E | Key lock / tempo range (with shift) | |
 
 #### LEDs
 
@@ -97,10 +100,10 @@ All connections use **BCM pin numbering**. Buttons use internal pull-up resistor
 
 #### Encoders
 
-| Encoder | CLK | DT | Button | Description |
-|---------|-----|-----|--------|-------------|
-| Jog Wheel | 18 | 25 | — | Pitch bend (playing) / scratch (paused) |
-| Browse | 15 | 14 | 7 | Scroll library / push to load |
+| Encoder | CLK | DT | Button | Description | Notes |
+|---------|-----|-----|--------|-------------|-------|
+| Jog Wheel | 18 | 25 | — | Pitch bend (playing) / scratch (paused) | |
+| Browse | 15 | 14 | **12** | Scroll library / push to load | CLK/DT on UART pins — disable serial console. Button moved from GPIO 7 to 12. |
 
 #### Pitch Fader (I2C)
 
@@ -111,30 +114,49 @@ All connections use **BCM pin numbering**. Buttons use internal pull-up resistor
 | ADS1115 Address | 0x48 | ADDR pin to GND |
 | Analog Input | A0 | Pitch fader wiper |
 
+### GPIO Conflict Resolution
+
+The original CDJPlayer `GPIO_PINS.cs` had several conflicts that are resolved in this project:
+
+| GPIO | Problem | Resolution |
+|------|---------|------------|
+| **24** | Double-assigned: Hold button + PITCH1_PIN | PITCH1 removed — pitch uses I2C (ADS1115), not GPIO |
+| **25** | Double-assigned: Jog encoder DT + PITCH2_PIN | PITCH2 removed — pitch uses I2C (ADS1115), not GPIO |
+| **8** | PITCH3_PIN on SPI CE0 | PITCH3 removed — pitch uses I2C. Pin freed. |
+| **7** | Browse encoder button on SPI CE1 | **Moved to GPIO 12** — SPI CE1 held LOW blocks Pi boot |
+| **14/15** | Browse encoder on UART TX/RX | Serial console must be disabled (install script handles this) |
+| **9/10/11** | Zip/Jet/Wah on SPI MISO/MOSI/SCLK | SPI must be disabled (install script handles this) |
+
+**PITCH1/2/3_PIN were dead code** in CDJPlayer — the pitch fader was always read
+via I2C (ADS1115 at address 0x48). Those GPIO definitions were from an older
+design and were never used in any event handler.
+
 ### Raspberry Pi GPIO Header
 
 ```
                 3V3  (1)  (2)  5V
-      I2C SDA   GP2  (3)  (4)  5V
-      I2C SCL   GP3  (5)  (6)  GND
-   Next Track   GP4  (7)  (8)  GP14  Browse DT
-                GND  (9)  (10) GP15  Browse CLK
+    [I2C SDA]   GP2  (3)  (4)  5V
+    [I2C SCL]   GP3  (5)  (6)  GND
+   Next Track   GP4  (7)  (8)  GP14  Browse DT [UART]
+                GND  (9)  (10) GP15  Browse CLK [UART]
     Auto Cue    GP17 (11) (12) GP18  Jog CLK
   Remove Disc   GP27 (13) (14) GND
-    Search +    GP22 (15) (16) GP23  (ADS Alert)
+    Search -    GP22 (15) (16) GP23  (free)
                 3V3  (17) (18) GP24  Hold/Mode
-        Zip     GP10 (19) (20) GND
-        Jet     GP9  (21) (22) GP25  Jog DT
-        Wah     GP11 (23) (24) GP8   —
-                GND  (25) (26) GP7   Browse BTN
+    Zip [SPI]   GP10 (19) (20) GND
+    Jet [SPI]   GP9  (21) (22) GP25  Jog DT
+    Wah [SPI]   GP11 (23) (24) GP8   (free)
+                GND  (25) (26) GP7   (free)
                 GP0  (27) (28) GP1
        Back     GP5  (29) (30) GND
-    Search -    GP6  (31) (32) GP12  —
+  Browse BTN*   GP12 (31) (32) GP6   Search +
   Tempo Master  GP13 (33) (34) GND
-    Play LED    GP19 (35) (36) GP16  —
+    Play LED    GP19 (35) (36) GP16  (free)
      Cue LED    GP26 (37) (38) GP20  Play/Pause
                 GND  (39) (40) GP21  Cue
 ```
+
+\* Browse encoder button moved from GPIO 7 → GPIO 12 (avoids SPI CE1 boot conflict)
 
 ## Button Modes
 

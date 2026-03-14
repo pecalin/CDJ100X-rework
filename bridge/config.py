@@ -1,8 +1,23 @@
 """
 CDJ100X Configuration — GPIO pins, MIDI mappings, and system settings.
 
-GPIO pin assignments follow CDJPlayer's hardware mod wiring.
+GPIO pin assignments follow CDJPlayer's hardware mod wiring, with conflicts
+resolved from the original GPIO_PINS.cs.
+
 MIDI note/CC numbers match the XDJ100SX Mixxx controller mapping.
+
+GPIO CONFLICT RESOLUTION (vs original CDJPlayer GPIO_PINS.cs):
+  - PITCH1/2/3_PIN (24, 25, 8) REMOVED — obsolete, pitch uses I2C (ADS1115)
+  - GPIO 24 was double-assigned (Hold button + PITCH1) — kept as Hold button
+  - GPIO 25 was double-assigned (Jog DT + PITCH2) — kept as Jog encoder DT
+  - GPIO 8 (PITCH3 / SPI CE0) — freed, no longer used
+  - GPIO 7 (Browse BTN / SPI CE1) — moved to GPIO 12 to avoid SPI boot issue
+  - GPIO 14/15 (Browse encoder / UART) — requires disabling serial console
+  - GPIO 9/10/11 (Zip/Jet/Wah / SPI) — safe, SPI is disabled by default
+
+IMPORTANT: Serial console must be disabled for browse encoder to work:
+  sudo raspi-config → Interface Options → Serial Port → Login shell: No
+  Or: remove 'console=serial0,115200' from /boot/cmdline.txt
 """
 
 # --- GPIO Pin Assignments (BCM numbering) ---
@@ -14,9 +29,9 @@ BUTTONS = {
     "back":         17,
     "search_fwd":   27,
     "search_bwd":   22,
-    "jet":          10,  # EFX button 1
-    "zip":           9,  # EFX button 2
-    "wah":          11,  # EFX button 3
+    "jet":          10,  # EFX button 1  (also SPI MOSI — SPI must be disabled)
+    "zip":           9,  # EFX button 2  (also SPI MISO — SPI must be disabled)
+    "wah":          11,  # EFX button 3  (also SPI SCLK — SPI must be disabled)
     "hold_mode":    24,  # Button mode switcher
     "auto_cue":      5,  # Shift modifier
     "remove_disc":   6,  # Eject
@@ -34,10 +49,15 @@ JOG_ENCODER = {
 }
 
 BROWSE_ENCODER = {
-    "clk": 15,
-    "dt":  14,
-    "btn":  7,
+    "clk": 15,  # Also UART RX — serial console must be disabled
+    "dt":  14,  # Also UART TX — serial console must be disabled
+    "btn": 12,  # Moved from GPIO 7 (SPI CE1 — can block boot if pulled low)
 }
+
+# NOTE: GPIO 7 (original browse encoder button) is SPI CE1.
+# If this pin is LOW during boot, the Pi may fail to start.
+# Rewire the browse encoder button to GPIO 12 instead.
+# GPIO 12 is a free general-purpose pin with no special boot function.
 
 # --- I2C Pitch Fader (ADS1115 ADC) ---
 
